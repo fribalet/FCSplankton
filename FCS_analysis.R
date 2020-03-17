@@ -17,34 +17,47 @@ library(splancs)
 library(caroline)
 library(viridis)
 library(tidyverse)
+library(grDevices)
+
+group.colors <- c(unknown="grey", beads="red3", prochloro=viridis::viridis(4)[1],synecho=viridis::viridis(4)[2],picoeuk=viridis::viridis(4)[3], croco=viridis::viridis(4)[4])
+
 
 plot.cytogram <- function (evtopp, para.x = "scatter", para.y = "red", ...){
+    cols <- colorRampPalette(c("blue4", "royalblue4", "deepskyblue3",
+        "seagreen3", "yellow", "orangered2", "darkred"))
     par(pty = "s")
     plot(evtopp[, c(para.x, para.y)], pch = 16, cex = 0.3,col = densCols(log10(evtopp[, c(para.x, para.y)]),
-          colramp = viridis::viridis), log='xy',...)
-    }
+          colramp = viridis), log="xy",...)
+}
 
 plot.vct.cytogram <- function (opp, para.x = "scatter", para.y = "red", ...){
-    group.colors <- c(unknown="grey", beads="red3", prochloro=viridis::viridis(4)[1],synecho=viridis::viridis(4)[2],picoeuk=viridis::viridis(4)[3], croco=viridis::viridis(4)[4])
     opp$pop <- factor(opp$pop, levels = names(group.colors))
+    caption <- group.colors[unique(opp$pop)]
 
-    par(pty = "s")        
-    plot(opp[, c(para.x, para.y)], pch = 16, cex = 0.3, col = as.numeric(as.factor(opp$pop)), log='xy', ...)
-    legend("topleft", legend = (unique(opp$pop)), col = unique(as.numeric(as.factor(opp$pop))), pch = 16, pt.cex = 0.6, bty = "n")
-    }
+    plot(opp[, c(para.x, para.y)], pch = 16, cex = 0.3, col = group.colors[opp$pop], log="xy", ...)
+    legend("topleft", legend = names(caption), col = caption,
+        pch = 16, pt.cex = 0.6, bty = "n")
+    abline(v=1, h=1, col="grey", lty=2)          
+
+}
+
+
 
 
 ### 3. Gating populations of interest
 #####################################
 # set the path to the FCS files
-setwd("/Volumes/GoogleDrive/My\ Drive/_PROJECT_")
+setwd("/Volumes/GoogleDrive/Shared\ drives/Influx/Light_Dark_Experiment_2019")
+
+# path to save analysis
+system("mkdir gating")
 
 # load list of FCS files
 file.list <- dir(".", pattern = ".fcs$", recursive=F)
 
-# load metadata
-meta <- read.csv(file = paste0('meta.csv'), header = T, sep = ',')
-ok_meta <- subset(meta, Flag == 0)      # only the unflagged files
+# # load metadata
+# meta <- read.csv(file = paste0("metadata.csv"), header = T, sep = ",")
+# ok_meta <- subset(meta, Flag == 0)      # only the unflagged files
 
 
 # a. Initialization
@@ -53,80 +66,82 @@ opp <- caroline::tab2df(exprs(read.FCS(this_file, transformation = T, emptyValue
 
     # Rename PMTs
     print(colnames(opp))
-    colnames(opp)[i] <- "scatter" # replace i by the column indice of FSC
-    colnames(opp)[i] <- "red" # replace i by the column indice of 692
-    colnames(opp)[i] <- "orange" # replace i by the column indice of 580
-    # colnames(opp)[i] <- "green" # replace i by the column indice of 530
-
+    id <- c(2,3,4) ## replace number by column indice of FSC, 692, 580 respectively
 
 gating <- TRUE
+
+summary.table <- NULL
 
 for (this_file in file.list){
 
     # this_file <- file.list[3]
-    print(paste("gating", this_file)
+    print(paste("gating", this_file))
     opp <- caroline::tab2df(exprs(read.FCS(this_file, transformation = T, emptyValue=F))) # read FCS file (Transformation = TRUE for log-amplified data)
-    opp$pop <- 0 # add a colum 'pop' to the table
+    colnames(opp)[c(2,3,4)] <- c("scatter", "red", "orange")
+    opp$pop <- 0 # add a colum "pop" to the table
 
 
-    # Load gating if exist
-    if(!gating){    
-            load(file=paste0("gating/",this_file, ".RData")
-            b.gates <- gates[[1]]
-            syn.gates <- gates[[2]]
-            pro.gates <- gates[[3]]
-            pico.gates <- gates[[4]]
-           }
+    # # Load gating if exist
+    # if(!gating){    
+    #         load(file=paste0("gating/",this_file, ".RData")
+    #         b.gates <- gates[[1]]
+    #         syn.gates <- gates[[2]]
+    #         pro.gates <- gates[[3]]
+    #         pico.gates <- gates[[4]]
+    #        }
 
     ### Beads Normalization
     # a. Gate beads
     params1 <- c("scatter","orange")
     if(gating){
-            plot.cytogram(opp[,params1], main="Gate Beads")
+            plot.cytogram(opp, params1[1], params1[2], main="Gate Beads")
             b.gates <- splancs::getpoly(); colnames(b.gates) <- params1 # draw gate
-            polygon(b.gates, lwd=2,  border='red3')
+            polygon(b.gates, lwd=2,  border="red3")
             }
     # b. Filter beads
     beads <- opp[inout(opp[,params1], b.gates),] 
+    opp[row.names(beads),"pop"] <- "beads"
 
     # c. Normalization
         opp$norm.scatter <- opp$scatter / median(beads$scatter)
         opp$norm.orange <- opp$orange / median(beads$orange)
         opp$norm.red <- opp$red / median(beads$red)
-        norm.opp <- opp[!inout(opp[,params1], b.gates),] # exclude beads
 
     # d. Gate Synecho
     params2 <- c("norm.scatter","norm.orange")
-    x <- subset(norm.opp, pop==0)
+    x <- subset(opp, pop==0)
     if(gating){
-            plot.cytogram(x[,params2], main="Gate Synechococcus")
+            par(mfrow=c(1,1), pty="s")
+            plot.cytogram(x, params2[1], params2[2], main="Gate Synechococcus")
             syn.gates <- splancs::getpoly(); colnames(syn.gates) <- params2  # draw gate
-            polygon(syn.gates, lwd=2,  border='red3')
+            polygon(syn.gates, lwd=2,  border="red3")
             }
         syn <- x[inout(x[,params2], syn.gates),]  
-        norm.opp[row.names(syn),'pop'] <- "synecho"
+        opp[row.names(syn),"pop"] <- "synecho"
 
     # e. Gate Prochlorococcus
     params3 <- c("norm.scatter","norm.red")
-    x <- subset(norm.opp, pop==0)
+    x <- subset(opp, pop==0)
     if(gating){
-            plot.cytogram(x[,params3], main="Gate Prochlorococcus")
+            par(mfrow=c(1,1), pty="s")
+            plot.cytogram(x, params3[1], params3[2], main="Gate Prochlorococcus")
             pro.gates <- splancs::getpoly(); colnames(pro.gates) <- params3 # draw gate
-            polygon(pro.gates, lwd=2,  border='red3')
+            polygon(pro.gates, lwd=2,  border="red3")
             }
         pro <- x[inout(x[,params3], pro.gates),] 
-        norm.opp[row.names(pro),'pop'] <- "prochloro"
+        opp[row.names(pro),"pop"] <- "prochloro"
 
     # e. Gate Picoeukaryotes
     params4 <- c("norm.scatter","norm.red")
-    x <- subset(norm.opp, pop==0)
+    x <- subset(opp, pop==0)
     if(gating){
-            plot.cytogram(x[,params3], main="Gate Picoeukaryotes")
-            pico.gates <- splancs::getpoly(); colnames(pico.gates) <- params4  # draw gate
-            polygon(pico.gates, lwd=2,  border='red3')
+            par(mfrow=c(1,1), pty="s")
+            plot.cytogram(x, params4[1], params4[2], main="Gate Picoeukaryotes")
+            pico.gates <- list(splancs::getpoly()); colnames(pico.gates) <- params4 # draw gate
+            polygon(pico.gates, lwd=2,  border="red3")
             }
         pico <- x[inout(x[,params4], pico.gates),] 
-        norm.opp[row.names(pico),'pop'] <- "picoeuk"
+        opp[row.names(pico),"pop"] <- "picoeuk"
 
     # f. Save gating
     gates <- list(b.gates, syn.gates, pro.gates, pico.gates) 
@@ -134,21 +149,22 @@ for (this_file in file.list){
    
     ### 4. SAVE PLOT
     ################
-    png(paste0("gating/",this_file,".png"),width=12, height=9, unit='in', res=100)
-        par(mfrow=c(1,2))
-        plot.vct.cytogram(norm.opp, "scatter","red")
-        plot.vct.cytogram(norm.opp, "scatter","orange")
+    png(paste0("gating/",this_file,".png"),width=12, height=6, unit="in", res=200)
+        par(mfrow=c(1,2), pty="s", cex=1.2, oma=c(0,0,1,0), mar=c(5,5,1,1))
+        plot.vct.cytogram(opp, "norm.scatter","norm.red", ylab="red\n (normalized to beads)", xlab="scatter\n (normalized to beads)")
+        plot.vct.cytogram(opp, "norm.scatter","norm.orange", ylab="orange\n (normalized to beads)", xlab="scatter\n (normalized to beads)")
+        mtext(paste(basename(this_file)), outer=TRUE)
     dev.off()
 
     ### 5. SUMMARY 
     ##############
 
     stat.table <- NULL
-    for(population in unique(norm.opp$pop)){
+    for(population in unique(opp$pop)){
         #print(i)
         if(population == 0) next
     
-        p <- subset(norm.opp, pop == population)
+        p <- subset(opp, pop == population)
         n <- nrow(p)
     
         if(n ==0) {
@@ -164,7 +180,7 @@ for (this_file in file.list){
     }
 
 
-    table <- data.frame(cbind(stat.table, file=basename(file)))
+    table <- data.frame(cbind(stat.table, file=basename(this_file)))
     summary.table <- rbind(summary.table, table)
 
 }
