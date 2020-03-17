@@ -75,7 +75,7 @@ for (this_file in file.list){
             b.gates <- gates[[1]]
             syn.gates <- gates[[2]]
             pro.gates <- gates[[3]]
-            pico.gates <- gates[[3]]
+            pico.gates <- gates[[4]]
            }
 
     ### Beads Normalization
@@ -144,11 +144,11 @@ for (this_file in file.list){
     ##############
 
     stat.table <- NULL
-    for(i in unique(norm.opp$pop)){
+    for(population in unique(norm.opp$pop)){
         #print(i)
-        if(i == 0) next
+        if(population == 0) next
     
-        p <- subset(norm.opp, pop == i)
+        p <- subset(norm.opp, pop == population)
         n <- nrow(p)
     
         if(n ==0) {
@@ -159,7 +159,7 @@ for (this_file in file.list){
             red <- round(median(p$norm.red))
             orange <- round(median(p$norm.orange))
         }
-        var <- cbind(i,n,scatter,red,orange)
+        var <- cbind(population,n,scatter,red,orange)
         stat.table <- rbind(stat.table, var)
     }
 
