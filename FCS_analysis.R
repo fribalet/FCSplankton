@@ -8,8 +8,7 @@ BiocManager::install(c("flowCore",
                         "caroline", 
                         "viridis",
                         "tidyverse",
-                        "grDevices",
-                        "av"), dependencies = TRUE)
+                        dependencies = TRUE)
 
 ### 2. Load libraries and other goodies
 #######################################
@@ -18,8 +17,6 @@ library(splancs)
 library(caroline)
 library(viridis)
 library(tidyverse)
-library(grDevices)
-library(av)
 
 plot.cytogram <- function (evtopp, para.x = "scatter", para.y = "red", ...){
     par(pty = "s")
@@ -66,9 +63,8 @@ gating <- TRUE
 
 for (this_file in file.list){
 
-    # this_file <- file.list[1] # only when initializing gating parameters
-     print(paste("gating", this_file)
-
+    # this_file <- file.list[3]
+    print(paste("gating", this_file)
     opp <- caroline::tab2df(exprs(read.FCS(this_file, transformation = T, emptyValue=F))) # read FCS file (Transformation = TRUE for log-amplified data)
     opp$pop <- 0 # add a colum 'pop' to the table
 
@@ -77,9 +73,10 @@ for (this_file in file.list){
     if(!gating){    
             load(file=paste0("gating/",this_file, ".RData")
             b.gates <- gates[[1]]
-            pro.gates <- gates[[2]]
-            pro.gates2 <- gates[[3]]
-            }
+            syn.gates <- gates[[2]]
+            pro.gates <- gates[[3]]
+            pico.gates <- gates[[3]]
+           }
 
     ### Beads Normalization
     # a. Gate beads
