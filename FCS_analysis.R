@@ -78,7 +78,7 @@ for (this_file in file.list){
     print(paste("gating", this_file))
     opp <- caroline::tab2df(exprs(read.FCS(this_file, transformation = T, emptyValue=F))) # read FCS file (Transformation = TRUE for log-amplified data)
     colnames(opp)[c(2,3,4)] <- c("scatter", "red", "orange")
-    opp$pop <- 0 # add a colum "pop" to the table
+    opp$pop <- "unknown" # add a colum "pop" to the table
 
 
     # # Load gating if exist
@@ -109,7 +109,7 @@ for (this_file in file.list){
 
     # d. Gate Synecho
     params2 <- c("norm.scatter","norm.orange")
-    x <- subset(opp, pop==0)
+    x <- subset(opp, pop=="unknown")
     if(gating){
             par(mfrow=c(1,1), pty="s")
             plot.cytogram(x, params2[1], params2[2], main="Gate Synechococcus")
@@ -121,7 +121,7 @@ for (this_file in file.list){
 
     # e. Gate Prochlorococcus
     params3 <- c("norm.scatter","norm.red")
-    x <- subset(opp, pop==0)
+    x <- subset(opp, pop=="unknown")
     if(gating){
             par(mfrow=c(1,1), pty="s")
             plot.cytogram(x, params3[1], params3[2], main="Gate Prochlorococcus")
@@ -133,11 +133,11 @@ for (this_file in file.list){
 
     # e. Gate Picoeukaryotes
     params4 <- c("norm.scatter","norm.red")
-    x <- subset(opp, pop==0)
+    x <- subset(opp, pop=="unknown")
     if(gating){
             par(mfrow=c(1,1), pty="s")
             plot.cytogram(x, params4[1], params4[2], main="Gate Picoeukaryotes")
-            pico.gates <- list(splancs::getpoly()); colnames(pico.gates) <- params4 # draw gate
+            pico.gates <- splancs::getpoly(); colnames(pico.gates) <- params4 # draw gate
             polygon(pico.gates, lwd=2,  border="red3")
             }
         pico <- x[inout(x[,params4], pico.gates),] 
@@ -162,8 +162,7 @@ for (this_file in file.list){
     stat.table <- NULL
     for(population in unique(opp$pop)){
         #print(i)
-        if(population == 0) next
-    
+   
         p <- subset(opp, pop == population)
         n <- nrow(p)
     
