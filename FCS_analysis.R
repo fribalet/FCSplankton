@@ -19,9 +19,6 @@ library(viridis)
 library(tidyverse)
 library(grDevices)
 
-group.colors <- c(unknown="grey", beads="red3", prochloro=viridis::viridis(4)[1],synecho=viridis::viridis(4)[2],picoeuk=viridis::viridis(4)[3], croco=viridis::viridis(4)[4])
-
-
 plot.cytogram <- function (evtopp, para.x = "scatter", para.y = "red", ...){
     cols <- colorRampPalette(c("blue4", "royalblue4", "deepskyblue3",
         "seagreen3", "yellow", "orangered2", "darkred"))
@@ -31,17 +28,16 @@ plot.cytogram <- function (evtopp, para.x = "scatter", para.y = "red", ...){
 }
 
 plot.vct.cytogram <- function (opp, para.x = "scatter", para.y = "red", ...){
-    opp$pop <- factor(opp$pop, levels = names(group.colors))
+    group.colors <- c(unknown="grey", beads="red3", prochloro=viridis::viridis(4)[1],synecho=viridis::viridis(4)[2],picoeuk=viridis::viridis(4)[3], croco=viridis::viridis(4)[4])opp$pop <- factor(opp$pop, levels = names(group.colors))
     caption <- group.colors[unique(opp$pop)]
 
+    par(pty = "s")
     plot(opp[, c(para.x, para.y)], pch = 16, cex = 0.3, col = group.colors[opp$pop], log="xy", ...)
     legend("topleft", legend = names(caption), col = caption,
         pch = 16, pt.cex = 0.6, bty = "n")
     abline(v=1, h=1, col="grey", lty=2)          
 
 }
-
-
 
 
 ### 3. Gating populations of interest
