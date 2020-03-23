@@ -28,8 +28,8 @@ plot.vct.cytogram <- function (fcs, para.x = "scatter", para.y = "red", ...){
                       synecho=viridis::viridis(4)[2],
                       picoeuk=viridis::viridis(4)[3], 
                       croco=viridis::viridis(4)[4], 
-                      small-picoeuk=viridis::viridis(4)[3], 
-                      large-picoeuk=viridis::viridis(4)[4])
+                      "small-picoeuk"=viridis::viridis(4)[3], 
+                      "large-picoeuk"=viridis::viridis(4)[4])
     fcs$pop <- factor(fcs$pop, levels = names(group.colors))
     caption <- group.colors[unique(fcs$pop)]
 
