@@ -98,7 +98,7 @@ for (this_file in file.list){
         p <- subset(fcs, pop == population)
         count <- nrow(p)
 
-        if(n ==0) {
+        if(count == 0) {
             scatter <- 0
             red <- 0
         }else{
