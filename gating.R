@@ -1,13 +1,12 @@
-### 1. Load libraries and other goodies
-#######################################
+# set the path to the FCS files
+setwd("/Volumes/GoogleDrive/Shared\ drives/Influx/Nick_Hawco_incubations_2019")
+
+# Load packages
 library(viridis)
 library(tidyverse)
-system("Rscript core-functions.R")
 
-### 2. Gating populations of interest
-#####################################
-# set the path to the FCS files
-setwd("/Volumes/GoogleDrive/Shared\ drives/Influx/Light_Dark_Experiment_2019")
+# Load custom functions
+source("core-functions.R")
 
 # path to save analysis
 system("mkdir gating")
@@ -26,14 +25,19 @@ fcs <- caroline::tab2df(flowCore::exprs(flowCore::read.FCS(this_file, transforma
 
     # Rename PMTs
     print(colnames(fcs))
-    id <- c(2,4,6) ## replace number by column indice of FSC, 692, 580 respectively
+    id <- c(14,24,20) ## replace number by column indice of FSC, 692, 580 respectively
     colnames(fcs)[id]
     names.pmt <- colnames(fcs)[id] # original names of FSC, 692, 580 respectively
 
-gating <- FALSE
+gating <- TRUE
 
 summary.table <- NULL
 # summary.table <- read_csv("summary.csv") # if you want to append results to an existing summary.table.
+
+
+
+### Gating populations of interest ###
+######################################
 
 for (this_file in file.list){
 
@@ -47,7 +51,7 @@ for (this_file in file.list){
     colnames(fcs)[id] <- c("scatter", "red", "orange")
 
     # Load gating if exist
-    if(!gating) load(file=paste0("gating/",this_file, ".RData"))
+    # if(!gating) load(file=paste0("gating/",this_file, ".RData"))
 
     ### Beads Normalization
     # Gates Beads
@@ -63,17 +67,17 @@ for (this_file in file.list){
     ### Gating population - WARNINGS: don't change population names!
     if(gating){
         gates.log <- set.gating.params(fcs, "synecho", "norm.scatter", "norm.orange", gates.log)
-        #gates.log <- set.gating.params(fcs, "prochloro", "norm.scatter", "norm.red", gates.log)
-        #gates.log <- set.gating.params(fcs, "picoeuk", "norm.scatter", "norm.red", gates.log)
-        gates.log <- set.gating.params(fcs, "small-picoeuk", "norm.scatter", "norm.red", gates.log)
-        gates.log <- set.gating.params(fcs, "large-picoeuk", "norm.scatter", "norm.red", gates.log)
+        gates.log <- set.gating.params(fcs, "prochloro", "norm.scatter", "norm.red", gates.log)
+        gates.log <- set.gating.params(fcs, "picoeuk", "norm.scatter", "norm.red", gates.log)
+        #gates.log <- set.gating.params(fcs, "small-picoeuk", "norm.scatter", "norm.red", gates.log)
+        #gates.log <- set.gating.params(fcs, "large-picoeuk", "norm.scatter", "norm.red", gates.log)
    }
     fcs$pop <- "unknown"
     fcs <- classify.fcs(fcs, gates.log)
 
     ### Save Gating
     if(gating){
-        save(gates.log, file=paste0("gating/",this_file,".RData"))
+        save(gates.log, file=paste0("gating/",this_file,".RData"))a
     }
 
     ### Save plot
@@ -92,7 +96,7 @@ for (this_file in file.list){
         #print(i)
 
         p <- subset(fcs, pop == population)
-        n <- nrow(p)
+        count <- nrow(p)
 
         if(n ==0) {
             scatter <- 0
@@ -102,7 +106,7 @@ for (this_file in file.list){
             red <- round(median(p$norm.red),6)
             orange <- round(median(p$norm.orange),6)
         }
-        var <- cbind(population,n,scatter,red,orange)
+        var <- cbind(population,count,scatter,red,orange)
         stat.table <- rbind(stat.table, var)
     }
     table <- data.frame(cbind(stat.table, file=basename(this_file)))
@@ -115,5 +119,5 @@ for (this_file in file.list){
 
 }
 
-
+# save summary table
 write.csv(summary.table,file="summary.csv", row.names=FALSE, quote=FALSE)
