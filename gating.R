@@ -6,7 +6,8 @@ library(viridis)
 library(tidyverse)
 
 # Load custom functions
-source("core-functions.R")
+# source("core-functions.R")
+library(FCSplankton)
 
 # path to save analysis
 system("mkdir gating")
@@ -77,7 +78,7 @@ for (this_file in file.list){
 
     ### Save Gating
     if(gating){
-        save(gates.log, file=paste0("gating/",this_file,".RData"))a
+        save(gates.log, file=paste0("gating/",this_file,".RData"))
     }
 
     ### Save plot

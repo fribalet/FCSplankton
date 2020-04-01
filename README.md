@@ -1,2 +1,2 @@
-# FCS_analysis
-An R script to process FCS files. The script allows you to do gate population of interest and perform aggregate statistics.
+# FCS_plankton
+A R package for analyzing phytoplankton population from discrete flow cytometry data. The script allows you to do gate population of interest, save gating parameters, and perform aggregate statistics.
