@@ -5,7 +5,8 @@ var_data <- c("time", "lat", "lon",
               "count",
               "scatter","red","orange",
               "volume",
-              "abundance")
+              "abundance",
+              "flag")
 
 var_standard_name <- c("time",
                   "latitude",
@@ -17,7 +18,8 @@ var_standard_name <- c("time",
                   "median of red fluorescence",
                   "median of orange fluorescence",
                   "sample volume",
-                  "cell concentration")
+                  "cell concentration",
+                  "status flag")
 
 var_long_name <- c("time of sample collection (UTC)",
                   "latitude",
@@ -29,7 +31,8 @@ var_long_name <- c("time of sample collection (UTC)",
                   "50% percentile of red fluorescence (proxy of chlorophyll content)",
                   "50% percentile of orange fluorescence (proxy of phycoerythrin content)",
                   "volume of sample analyzed",
-                  "cell abundance")
+                  "cell abundance",
+                  "outliers")
 
 var_comment <-  c(rep("none",4),
                   "prochloro (Prochlorococcus) synecho (Synechococcus) picoeuk (large phytoplankton) beads (internal standard) croco (Crocosphaera-like particles) unknown (unclassified particles)",
@@ -38,14 +41,16 @@ var_comment <-  c(rep("none",4),
                   "red fluorescence collected using a 692-40 bandpass filter",
                   "orange fluorescence collected using a 572-27 bandpass filter",
                   "volume measured by pressure sensor",
-                  "number of particles divided by the volume of sample")
+                  "number of particles divided by the volume of sample",
+                  'outliers (0 = Quality data; 1 = issue related to instrument performance; 2 = issue related to population classification)')
 
 var_unit <- c("%Y-%m-%dT%H:%M:%S",
               "decimal degree North",
               "decimal degree East",
               rep("unitless",6),
               "microliter",
-              "cells per microliter")
+              "cells per microliter",
+              "unitless")
 
 var_keywords <- c("time+UTC+date",
                 "latitude",
@@ -57,15 +62,17 @@ var_keywords <- c("time+UTC+date",
                 "red+fluorescence+chlorophyll",
                 "orange+fluorescence+chlorophyll",
                 "",
-                "abundance+concentration+density")
+                "abundance+concentration+density",
+                "")
 
-var_sensor <- rep("Influx",11)
+var_sensor <- rep("Influx",12)
 
 var_discipline <- c(rep("", 4),
                    "taxonomy+cytometry+Influx",
                    rep("optics+cytometry+Influx",4),
                    "",
-                   "biology+cytometry+Influx")
+                   "biology+cytometry+Influx",
+                   "")
 
 
 
