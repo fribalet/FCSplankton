@@ -14,3 +14,8 @@ install_github("fribalet/FCSplankton")
 git clone https://github.com/fribalet/FCSplankton.git
 R CMD install FCSplankton
 ```
+
+
+To start your analysis, open the R script ``gating.R``
+
+To plot the summary results, open the Jupityr notebook ``results.ipynb``
