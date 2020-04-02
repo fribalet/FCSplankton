@@ -93,8 +93,8 @@ var_discipline <- c(rep("", 4),
 xls_convert<- function(data, project, cruise, version = "v1.0") {
 
     # add custom column to metadata
-    id1 <- match(var_data,colnames(all)) # which column are standard
-    id2 <- which(is.na(match(1:ncol(all), id1))) # which column are not standard
+    id1 <- match(var_data,colnames(data)) # which column are standard
+    id2 <- which(is.na(match(1:ncol(data), id1))) # which column are not standard
     id <- c(id1,id2)
     
     # reorder columns in dataset
