@@ -6,7 +6,9 @@ library(viridis)
 library(tidyverse)
 
 # Load custom functions
-# source("core-functions.R")
+# To install FCSplankton library the first time, follow these two steps
+# library(devtools)
+# install_github("fribalet/FCSplankton")
 library(FCSplankton)
 
 # path to save analysis
