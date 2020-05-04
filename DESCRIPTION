@@ -5,10 +5,8 @@ Author: Francois Ribalet, Kelsy Cain
 Maintainer: Francois Ribalet <ribalet@uw.edu>
 Description: A R package for analyzing phytoplankton population from discrete flow cytometry data
 Depends:
-    R (>= 3.4.0)
-Imports:
+    R (>= 3.4.0),
     flowCore,
-    caroline,
     splancs,
     viridis,
     tidyverse
@@ -16,5 +14,5 @@ Suggests:
     devtools,
     openxlsx
 License: GPL-2
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Encoding: UTF-8
