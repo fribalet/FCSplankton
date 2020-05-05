@@ -1,10 +1,10 @@
-#' read an fcs file
+#' read a fcs file
 #' @param fcs_file path to the FCS file.
 #' @param tranformation whether or not to transform the data. Default is TRUE
 #' @param ... Additional parameters for flowCore::read.FCS()
 #' @return a tibble dataframe
 #' @usage fcs <- read.influx(fcs_file)
-#' @export plot_cytogram
+#' @export read_influx
 read_influx <- function(fcs_file, transformation=TRUE){
       
   df.fcs <- dplyr::as_tibble(flowCore::exprs(flowCore::read.FCS(fcs_file, transformation=transformation, emptyValue=F))) 
@@ -77,7 +77,7 @@ plot_vct_cytogram <- function (fcs, para.x = "scatter", para.y = "red", ...){
 #' poly.log <- set.gating.params(opp, "prochloro", "fsc_small", "chl_small",
 #'                               poly.log)
 #' }
-#' @export
+#' @export set_gating_params
 set_gating_params <- function(fcs, popname, para.x, para.y, poly.log=NULL) {
   popname <- as.character(popname)
   para.x <- as.character(para.x)
@@ -92,13 +92,11 @@ set_gating_params <- function(fcs, popname, para.x, para.y, poly.log=NULL) {
       s <- 1
   # 2. if no gating parameters found for stained sample, retrieve gating from unstained sample, if any
   }else{
-    previous <- sub("sybr_","",basename(previous))
-    previous <- sub("stained_","",basename(previous))
-    previous <- paste0("unstained/gating/", previous)
-    if(file.exists(previous)) load(previous)
+    previous <- dir(path="unstained/gating/", pattern=regmatches(previous, regexpr("[0-9].*RData", previous))) # look for file with similar file number in unstained folder
+    if(file.exists(previous)) load(paste0("unstained/gating/", previous))
     s <- 2
   }
-
+  
   par(mfrow=c(1,1))
   plot_cytogram(fcs, para.x, para.y)
   mtext(paste("Set Gate for:",popname), font=2)  
@@ -135,7 +133,7 @@ set_gating_params <- function(fcs, popname, para.x, para.y, poly.log=NULL) {
 #' \dontrun{
 #' vct <- manual.classify(opp, gates.log, "beads")
 #' }
-#' @export
+#' @export manual_classify
 manual_classify <- function(fcs, params, popname){ 
   
   if (is.null(fcs$pop)) {
@@ -169,7 +167,7 @@ manual_classify <- function(fcs, params, popname){
 #' \dontrun{
 #' opp <- classify.fcs(fcs, gates.log)
 #' }
-#' @export
+#' @export classify_fcs
 classify_fcs <- function(fcs, gates.log) {
   for (popname in names(gates.log)) {
     params <- gates.log[[popname]]
