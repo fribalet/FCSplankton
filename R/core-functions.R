@@ -100,10 +100,10 @@ set_gating_params <- function(fcs, popname, para.x, para.y, poly.log=NULL) {
   par(mfrow=c(1,1))
   plot_cytogram(fcs, para.x, para.y)
   mtext(paste("Set Gate for:",popname), font=2)  
-  if(!is.null(gates.log) & s == 1) polygon(gates.log[[popname]])
+  if(!is.null(gates.log) & s == 1) polygon(gates.log[[popname]], lwd=2, border="grey")
   if(!is.null(gates.log) & popname != "beads" & s == 2){
-    polygon(gates.log[["synecho"]])
-    polygon(gates.log[["prochloro"]])
+    polygon(gates.log[["synecho"]], lwd=2, border=viridis::viridis(4)[2])
+    polygon(gates.log[["prochloro"]], lwd=2, border=viridis::viridis(4)[1])
   }
   poly <- splancs::getpoly(quiet=TRUE) # Draw Gate
   colnames(poly) <- c(para.x, para.y)
