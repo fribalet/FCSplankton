@@ -127,7 +127,7 @@ for (this_file in file_list){
     table <- data.frame(cbind(stat_table, file=basename(this_file)))
 
     #  remove entries that already exist
-    id <- which(!is_na(match(summary_table$file,unique(table$file))))
+    id <- which(!is.na(match(summary_table$file,unique(table$file))))
      if(length(id) > 0) summary_table <- summary_table[-id,]
     # add replace with new entries
     summary_table <- rbind(summary_table, table)
