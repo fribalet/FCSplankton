@@ -31,7 +31,7 @@ names_pmt <- names(fcs)[id] # original names of FSC, 692, 580 and 530 respective
 ######################################
 gating <- TRUE
 summary_table <- NULL
-# summary_table <- read_csv("summary_csv") # if you want to append results to an existing summary_table_
+# summary_table <- read_csv(paste0(folder, "summary.csv")) # if you want to append results to an existing summary_table
 
 # Path where to save Gating output
 system(paste0("mkdir ",folder, "/gating"))
@@ -136,4 +136,4 @@ for (this_file in file_list){
 
 ### save summary table ###
 ##########################
-write_csv(summary_table,file="unstained/summary.csv", row.names=FALSE, quote=FALSE)
+write_csv(summary_table,path=paste0(folder, "/summary.csv"))
