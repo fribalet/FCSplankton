@@ -6,8 +6,8 @@
 #' @usage fcs <- read.influx(fcs_file)
 #' @export read_influx
 read_influx <- function(fcs_file, transformation=TRUE){
-      
-  df.fcs <- dplyr::as_tibble(flowCore::exprs(flowCore::read.FCS(fcs_file, transformation=transformation, emptyValue=F))) 
+
+  df.fcs <- dplyr::as_tibble(flowCore::exprs(flowCore::read.FCS(fcs_file, transformation=transformation, emptyValue=F)))
   fcs <- df.fcs %>%
           add_column(file = paste(fcs_file), pop = "unknown")
   return(fcs)
@@ -24,10 +24,10 @@ read_influx <- function(fcs_file, transformation=TRUE){
 #' @usage plot.cytogram(fcs, para.x = "scatter", para.y = "red", ...)
 #' @export plot_cytogram
 plot_cytogram <- function(fcs, para.x = "scatter", para.y = "red", ...) {
-  
+
   par(pty="s")
   plot(fcs[,c(para.x, para.y)], pch=16, cex=0.3,
-       col = grDevices::densCols(log10(fcs[,c(para.x, para.y)]), colramp = viridis::viridis), 
+       col = grDevices::densCols(log10(fcs[,c(para.x, para.y)]), colramp = viridis::viridis),
        log="xy", ...)
 }
 
@@ -41,23 +41,23 @@ plot_cytogram <- function(fcs, para.x = "scatter", para.y = "red", ...) {
 #' @usage plot.vct.cytogram(fcs, para.x = "scatter", para.y = "red")
 #' @export plot_vct_cytogram
 plot_vct_cytogram <- function (fcs, para.x = "scatter", para.y = "red", ...){
-  group.colors <- c(unknown="grey", beads="red3", 
-                    bacteria= "darkorchid2",
+  group.colors <- c(unknown="grey", beads="red3",
+                    bacteria= "lightsalmon1",
                     prochloro=viridis::viridis(4)[1],
                     synecho=viridis::viridis(4)[2],
-                    picoeuk=viridis::viridis(4)[3], 
-                    croco=viridis::viridis(4)[4], 
-                    "small-picoeuk"=viridis::viridis(4)[3], 
+                    picoeuk=viridis::viridis(4)[3],
+                    croco=viridis::viridis(4)[4],
+                    "small-picoeuk"=viridis::viridis(4)[3],
                     "large-picoeuk"=viridis::viridis(4)[4])
   fcs$pop <- factor(fcs$pop, levels = names(group.colors))
   caption <- group.colors[unique(fcs$pop)]
 
   par(pty = "s")
-  plot(fcs[, c(para.x, para.y)], pch = 16, cex = 0.3, col = group.colors[fcs$pop], 
+  plot(fcs[, c(para.x, para.y)], pch = 16, cex = 0.3, col = group.colors[fcs$pop],
        log="xy", main=paste(unique(basename(fcs$file))), ...)
   legend("topleft", legend = names(caption), col = caption,
       pch = 16, pt.cex = 0.6, bty = "n")
-  abline(v=1, h=1, col="grey", lty=2)          
+  abline(v=1, h=1, col="grey", lty=2)
 }
 
 #' Define polygons for population gating.
@@ -92,14 +92,14 @@ set_gating_params <- function(fcs, popname, para.x, para.y, poly.log=NULL) {
       s <- 1
   # 2. if no gating parameters found for stained sample, retrieve gating from unstained sample, if any
   }else{
-    previous <- dir(path="unstained/gating/", pattern=regmatches(previous, regexpr("[0-9].*RData", previous))) # look for file with similar file number in unstained folder
-    if(file.exists(previous)) load(paste0("unstained/gating/", previous))
+    previous <- dir(path="unstained/gating", full.names = TRUE, pattern=regmatches(previous, regexpr("[0-9].*RData", previous))) # look for file with similar file number in unstained folder
+    if(file.exists(previous)) load(previous)
     s <- 2
   }
-  
+
   par(mfrow=c(1,1))
   plot_cytogram(fcs, para.x, para.y)
-  mtext(paste("Set Gate for:",popname), font=2)  
+  mtext(paste("Set Gate for:",popname), font=2)
   if(!is.null(gates.log) & s == 1) polygon(gates.log[[popname]], lwd=2, border="grey")
   if(!is.null(gates.log) & popname != "beads" & s == 2){
     polygon(gates.log[["synecho"]], lwd=2, border=viridis::viridis(4)[2])
@@ -134,8 +134,8 @@ set_gating_params <- function(fcs, popname, para.x, para.y, poly.log=NULL) {
 #' vct <- manual.classify(opp, gates.log, "beads")
 #' }
 #' @export manual_classify
-manual_classify <- function(fcs, params, popname){ 
-  
+manual_classify <- function(fcs, params, popname){
+
   if (is.null(fcs$pop)) {
     fcs$pop <- "unknown"
   }
@@ -146,7 +146,7 @@ manual_classify <- function(fcs, params, popname){
 
   poly <- params # Get gating polygon definition
   para <- colnames(poly)  # channels
-  
+
   df <- fcs[, para]
   colnames(poly) <- colnames(df) <- c("x","y") # to stop stupid Warnings from splancs::inout()
   id <- splancs::inout(df,poly=poly, bound=TRUE, quiet=TRUE) # indices particles based on Gate
@@ -175,4 +175,3 @@ classify_fcs <- function(fcs, gates.log) {
    }
   return(fcs)
 }
-
