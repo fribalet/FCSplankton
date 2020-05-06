@@ -68,7 +68,7 @@ for (this_file in file_list){
     fcs$norm.green <- fcs$green / median(beads$green)
 
     # Gating population - WARNINGS: don't change population names!
-    if(gating & folder != "unstained"){
+    if(gating & folder == "unstained"){
         gates.log <- set_gating_params(fcs, "synecho", "norm.scatter", "norm.orange", gates.log)
         gates.log <- set_gating_params(fcs, "prochloro", "norm.scatter", "norm.red", gates.log)
         gates.log <- set_gating_params(fcs, "picoeuk", "norm.scatter", "norm.red", gates.log)
@@ -108,8 +108,7 @@ for (this_file in file_list){
     for(population in unique(fcs$pop)){
         #print(i)
 
-        p <- fcs %>%
-              filter(pop == population)
+        p <- subset(fcs, pop == population)
         count <- nrow(p)
 
         if(count == 0) {
