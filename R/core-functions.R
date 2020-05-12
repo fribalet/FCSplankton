@@ -82,19 +82,22 @@ set_gating_params <- function(fcs, popname, para.x, para.y, poly.log=NULL) {
   popname <- as.character(popname)
   para.x <- as.character(para.x)
   para.y <- as.character(para.y)
-
-
+  s <- 0  
+  gates.log <- NULL
+  
   ###  look for previous gating parameters
   previous <- sub("raw", "gating", paste0(unique(fcs$file),".RData"))
   # 1. retrieve  gating for the exact same file
   if(file.exists(previous)){
-      load(previous)
-      s <- 1
+    load(previous)
+    s <- 1
   # 2. if no gating parameters found for stained sample, retrieve gating from unstained sample, if any
   }else{
     previous <- dir(path="unstained/gating", full.names = TRUE, pattern=regmatches(previous, regexpr("[0-9].*RData", previous))) # look for file with similar file number in unstained folder
-    if(file.exists(previous)) load(previous)
-    s <- 2
+    if(length(previous) !=0){
+      load(previous)
+      s <- 2
+    }
   }
 
   par(mfrow=c(1,1))
