@@ -1,4 +1,4 @@
-var_data <- c("time", "lat", "lon",
+var_data <- c("time", "lat", "lon", "depth",
               "file",
               "population",
               "count",
@@ -10,6 +10,7 @@ var_data <- c("time", "lat", "lon",
 var_standard_name <- c("time",
                   "latitude",
                   "longitude",
+                  "depth",
                   "filename",
                   "population name",
                   "particle count",
@@ -23,6 +24,7 @@ var_standard_name <- c("time",
 var_long_name <- c("time of sample collection (UTC)",
                   "latitude",
                   "longitude",
+                  "depth",
                   "flow cytometry standard file (.fcs)",
                   "name of cytometric population",
                   "number of particles counted by the instrument",
@@ -33,8 +35,8 @@ var_long_name <- c("time of sample collection (UTC)",
                   "cell abundance",
                   "outliers")
 
-var_comment <-  c(rep("none",4),
-                  "prochloro (Prochlorococcus) synecho (Synechococcus) picoeuk (large phytoplankton) beads (internal standard) croco (Crocosphaera-like particles) unknown (unclassified particles)",
+var_comment <-  c(rep("none",5),
+                  "prochloro (Prochlorococcus) synecho (Synechococcus) picoeuk (large phytoplankton) beads (internal standard) croco (Crocosphaera-like particles) bacteria (heterotrophic bacteria) unknown (unclassified particles)",
                   "needs to be > 30 to be trusted",
                   "light scatter collected using a 457-50 bandpass filter",
                   "red fluorescence collected using a 692-40 bandpass filter",
@@ -46,31 +48,32 @@ var_comment <-  c(rep("none",4),
 var_unit <- c("%Y-%m-%dT%H:%M:%S",
               "decimal degree North",
               "decimal degree East",
-              rep("unitless",6),
+              "meter",
+              rep("",6),
               "microliter",
               "cells per microliter",
-              "unitless")
+              "")
 
-var_keywords <- c("time+UTC+date",
+var_keywords <- c("time,UTC,date",
                 "latitude",
                 "longitude",
+                "depth",
                 "",
-                "Prochlorococcus+Synechococcus+Crocosphaera+picoeukaryotes+phytoplankton+picophytoplankton+unknown",
+                "Prochlorococcus, Synechococcus, Crocosphaera, bacteria, picoeukaryotes, phytoplankton, picophytoplankton, unknown",
                 "",
-                "forward+angle+light+scatter+FSC+FALS",
-                "red+fluorescence+chlorophyll",
-                "orange+fluorescence+chlorophyll",
+                "forward angle light scatter, FSC, FALS",
+                "red fluorescence, chlorophyll",
+                "orange fluorescence, phycoerythrin",
                 "",
-                "abundance+concentration+density",
+                "abundance, concentration",
                 "")
 
-var_sensor <- rep("Influx",12)
+var_sensor <- rep("BD Influx cell sorter",13)
 
-var_discipline <- c(rep("", 4),
-                   "taxonomy+cytometry+Influx",
-                   rep("optics+cytometry+Influx",4),
+var_discipline <- c(rep("", 5),
+                   rep("Biology, cytometry",5),
                    "",
-                   "biology+cytometry+Influx",
+                   "Biology, cytometry",
                    "")
 
 
@@ -80,7 +83,6 @@ var_discipline <- c(rep("", 4),
 #' Format Influx data into an Excel spreadsheet, along with metadata.
 #'
 #' @param data data from Influx.
-#' @param project Version of the dataset.
 #' @param cruise cruise name, if any (otherwise NA).
 #' @param version Version of the dataset.
 #' @return None
@@ -89,7 +91,7 @@ var_discipline <- c(rep("", 4),
 #' csv_convert(db, meta, path)
 #' }
 #' @export
-xls_convert<- function(data, project, cruise, version = "v1.0") {
+xls_convert<- function(data, cruise, version = "v1.0") {
 
     # add custom column to metadata
     id1 <- match(var_data,colnames(data)) # which column are standard
@@ -99,12 +101,11 @@ xls_convert<- function(data, project, cruise, version = "v1.0") {
     # vars_metadata
     vars_metadata <- dplyr::tibble(
                           var_short_name = var_data,
-                          var_standard_name,
+                          var_long_name,
                           var_sensor,
                           var_unit,
                           var_spatial_res = "irregular",
                           var_temporal_res = "irregular",
-                          var_missing_value = "NA",
                           var_discipline,
                           var_keywords,
                           var_comment)
@@ -112,15 +113,15 @@ xls_convert<- function(data, project, cruise, version = "v1.0") {
     # custom metadata
     custom_metadata <- dplyr::tibble(
                           var_short_name = colnames(data[,id2]),
-                          var_standard_name = "NA",
-                          var_sensor = "NA",
-                          var_unit = "NA",
+                          var_long_name = "",
+                          var_sensor = "",
+                          var_unit = "",
                           var_spatial_res = "irregular",
                           var_temporal_res = "irregular",
-                          var_missing_value = "NA",
-                          var_discipline = "NA",
-                          var_keywords = "NA",
-                          var_comment = "NA")
+                          var_missing_value = "",
+                          var_discipline = "",
+                          var_keywords = "",
+                          var_comment = "")
 
     allvars_metadata <- rbind(vars_metadata, custom_metadata)
 
@@ -128,22 +129,22 @@ xls_convert<- function(data, project, cruise, version = "v1.0") {
     dataset_metadata <- dplyr::tibble(
                           dataset_short_name = paste0("Influx_",project),
                           dataset_long_name = paste0("Influx_",project),
-                          dataset_cruise = cruise,
-                          dataset_project = project,
                           dataset_version = version,
                           dataset_release_date = as.Date(Sys.time()),
                           dataset_make = "observation",
-                          dataset_source = "Influx data generated by University of Washington / Armbrust lab (kcain97@uw.edu, ribalet@uw.edu)",
-                          dataset_doi = "to be added by the data owner",
-                          dataset_history = "",
+                          dataset_source = "University of Washington / Armbrust lab",
+                          official_cruise_name = cruise,
+                          dataset_acknowledgement = "",
+                          contact_emaail = "kcain97@uw.edu, ribalet@uw.edu",
                           dataset_description = "to be added by data owner",
-                          dataset_references = "")
+                          dataset_references = "",
+                          climatology = NULL)
     
     # reorder columns in dataset
     data <- data[,id]
                    
-    openxlsx::write.xlsx(x=list(data, allvars_metadata, dataset_metadata), 
+    openxlsx::write.xlsx(x=list(data, dataset_metadata, allvars_metadata), 
                          file = paste0("Influx_", project, "_dataset_", version,".xlsx"), 
-                         sheetName=c('data','vars_metadata','dataset_metadata'))
+                         sheetName=c('data','dataset_meta_data','vars_meta_data'))
 
 }
