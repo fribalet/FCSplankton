@@ -1,18 +1,13 @@
-var_data <- c("time", "lat", "lon", "depth",
-              "file",
+var_data <- c("file",
               "population",
               "count",
-              "scatter","red","orange",
+              "scatter", "red", "orange",
               "volume",
               "abundance",
               "flag",
               "stain")
 
-var_standard_name <- c("time",
-                  "latitude",
-                  "longitude",
-                  "depth",
-                  "filename",
+var_standard_name <- c("filename",
                   "population name",
                   "particle count",
                   "median of forward angle light scatter",
@@ -23,12 +18,7 @@ var_standard_name <- c("time",
                   "status flag",
                   "stain flag")
 
-
-var_long_name <- c("time of sample collection (UTC)",
-                  "latitude",
-                  "longitude",
-                  "depth",
-                  "flow cytometry standard file (.fcs)",
+var_long_name <- c("flow cytometry standard file (.fcs)",
                   "name of cytometric population",
                   "number of particles counted by the instrument",
                   "50% percentile of forward angle light scatter (proxy of cell diameter)",
@@ -39,7 +29,7 @@ var_long_name <- c("time of sample collection (UTC)",
                   "sample status flag",
                   "sample stain flag")
 
-var_comment <-  c(rep("",5),
+var_comment <-  c("",
                   "prochloro (Prochlorococcus) synecho (Synechococcus) picoeuk (large phytoplankton) beads (internal standard) croco (Crocosphaera-like particles) bacteria (heterotrophic bacteria) unknown (unclassified particles)",
                   "needs to be > 30 to be trusted",
                   "light scatter collected using a 457-50 bandpass filter",
@@ -50,34 +40,15 @@ var_comment <-  c(rep("",5),
                   "outliers (0 = quality data; 1 = issue related to instrument performance; 2 = issue related to population classification)",
                   "DNA stain (0 = unstained sample; 1 = stained sample)")
 
-var_unit <- c("%Y-%m-%dT%H:%M:%S",
-              "decimal degree North",
-              "decimal degree East",
-              "meter",
-              rep("",6),
+var_unit <- c(rep("",6),
               "microliter",
               "cells/μL",
               "",
               "")
 
-var_keywords <- c("time, UTC, date",
-                "latitude, lat",
-                "longitude, lon",
-                "depth",
-                paste0("file, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington, ", cruise,", ", cruise_nickname,", ",project),
-                paste0("Prochlorococcus, pro, prochloro, Synechococcus, syn, synecho, Crocosphaera, croc, croco bacteria, picoeukaryotes, pico, picoeuks, phytoplankton, picophytoplankton, unknown, bacteria, heterotrophic bacteria, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington, ",cruise,", ", cruise_nickname,", ",project),
-                paste0("particle, particle count, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington", cruise,", ", cruise_nickname,", ",project),
-                paste0("forward angle light scatter, FSC, FALS, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington", cruise,", ", cruise_nickname,", ",project),
-                paste0("red fluorescence, chlorophyll, fluorescence, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington", cruise,", ", cruise_nickname,", ",project),
-                paste0("orange fluorescence, phycoerythrin, fluorescence, synechococcus, syn, synecho, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington", cruise,", ", cruise_nickname,", ",project),
-                paste0("volume, vol, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington", cruise,", ", cruise_nickname,", ",project),
-                paste0("abundance, cell concentration, concentration, cell count, cell abundance, prochloro abundance, Prochlorococcus Abundance, pro abundance, synecho abundance, synechococcus abundance, syn abundance, bacteria abundance, heterotrophic bacteria abundace, Crocosphaera abundance, croco abundance, picoeukaryote abundance, pico abundance, picoeuk abundance, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, in situ, in-situ, bio, biology, armbrust, UW, University of Washington", cruise,", ", cruise_nickname,", ",project),
-                paste0("flag, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington", cruise,", ", cruise_nickname,", ",project),
-                paste0("stain, DNA stain, SYBR, SYBR stain, bacteria, heterotrophic bacteria, bacteria abundance, flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington", cruise,", ", cruise_nickname,", ",project))
+var_sensor <- rep("Flow cytometry",10)
 
-var_sensor <- rep("Flow cytometry",14)
-
-var_discipline <- c(rep("", 5),
+var_discipline <- c("",
                    rep("Biology",5),
                    "",
                    "Biology",
@@ -86,12 +57,11 @@ var_discipline <- c(rep("", 5),
 
 
 
-
-
 #' Format Influx data into an Excel spreadsheet, along with metadata.
 #'
 #' @param data data from Influx.
 #' @param cruise cruise name, if any (otherwise NA).
+#' @param project cruise name, if any (otherwise NA).
 #' @param version Version of the dataset.
 #' @return None
 #' @examples
@@ -99,12 +69,27 @@ var_discipline <- c(rep("", 5),
 #' csv_convert(db, meta, path)
 #' }
 #' @export
-xls_convert<- function(data, cruise, version = "v1.0") {
+xls_convert<- function(data, cruise, project, version = "v1.0") {
+
+    core <- paste("flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington", cruise)
+
+    var_keywords <- c(paste("file", core),
+                paste("Prochlorococcus, pro, prochloro, Synechococcus, syn, synecho, Crocosphaera, croc, croco bacteria, picoeukaryotes, pico, picoeuks, phytoplankton, picophytoplankton, unknown, bacteria, heterotrophic bacteria", core),
+                paste("particle, particle count", core),
+                paste("forward angle light scatter, FSC, FALS", core),
+                paste("red fluorescence, chlorophyll, fluorescence",core),
+                paste("orange fluorescence, phycoerythrin, fluorescence, synechococcus, syn, synecho", core),
+                paste("volume, vol", core),
+                paste("abundance, cell concentration, concentration, cell count, cell abundance, prochloro abundance, Prochlorococcus Abundance, pro abundance, synecho abundance, synechococcus abundance, syn abundance, bacteria abundance, heterotrophic bacteria abundace, Crocosphaera abundance, croco abundance, picoeukaryote abundance, pico abundance, picoeuk abundance", core),
+                paste("flag", core),
+                paste("stain, DNA stain, SYBR, SYBR stain, bacteria, heterotrophic bacteria, bacteria abundance", core))
 
     # add custom column to metadata
     id1 <- match(var_data,colnames(data)) # which column are standard
     id2 <- which(is.na(match(1:ncol(data), id1))) # which column are not standard
     id <- c(id1,id2)
+
+    core <- core(cruise)
 
     # vars_metadata
     vars_metadata <- dplyr::tibble(
@@ -127,7 +112,7 @@ xls_convert<- function(data, cruise, version = "v1.0") {
                           var_spatial_res = "irregular",
                           var_temporal_res = "irregular",
                           var_discipline = "",
-                          var_keywords = paste0("flow, cytometry, flow cytometry, discrete flow cytometry, influx, BD Influx cell sorter, insitu, in-situ, bio, biology, armbrust, UW, University of Washington, ", cruise,", ", cruise_nickname,", ",project),
+                          var_keywords = core,
                           var_comment = "")
 
     allvars_metadata <- rbind(vars_metadata, custom_metadata)
@@ -148,10 +133,10 @@ xls_convert<- function(data, cruise, version = "v1.0") {
                           climatology = NULL)
 
     # reorder columns in dataset
-    data <- data[,id]
+    data <- data[,c("time","lat","lon","depth",id)]
 
     openxlsx::write.xlsx(x=list(data, dataset_metadata, allvars_metadata),
-                         file = paste0("Influx_", project, "_dataset_", version,".xlsx"),
+                         file = paste0("Influx_", project, "_",as.Date(Sys.time()),"_" ,version,".xlsx"),
                          sheetName=c('data','dataset_meta_data','vars_meta_data'))
 
 }
