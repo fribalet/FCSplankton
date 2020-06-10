@@ -85,9 +85,11 @@ xls_convert<- function(data, cruise, project, version = "v1.0") {
                 paste("stain, DNA stain, SYBR, SYBR stain, bacteria, heterotrophic bacteria, bacteria abundance", core))
 
     # add custom column to metadata
+    coordinates <- c("time","lat","lon","depth")
+    id0 <- match(coordinates,colnames(data)) # which column are standard
     id1 <- match(var_data,colnames(data)) # which column are standard
-    id2 <- which(is.na(match(1:ncol(data), id1))) # which column are not standard
-    id <- c(id1,id2)
+    id2 <- which(is.na(match(1:ncol(data), c(id0, id1)))) # which column are not standard
+    id <- c(id0, id1, id2)
 
     # vars_metadata
     vars_metadata <- dplyr::tibble(
@@ -131,7 +133,7 @@ xls_convert<- function(data, cruise, project, version = "v1.0") {
                           climatology = NULL)
 
     # reorder columns in dataset
-    data <- data[,c("time","lat","lon","depth",id)]
+    data <- data[,id]
 
     openxlsx::write.xlsx(x=list(data, dataset_metadata, allvars_metadata),
                          file = paste0("Influx_", project, "_",as.Date(Sys.time()),"_" ,version,".xlsx"),
