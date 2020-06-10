@@ -55,6 +55,8 @@ var_discipline <- c("",
                    "",
                    "")
 
+visualize <- c(0, 0, 0, 1, 1, 1, 0, 1, 0, 0)
+
 
 
 #' Format Influx data into an Excel spreadsheet, along with metadata.
@@ -101,11 +103,12 @@ xls_convert<- function(data, cruise, project, version = "v1.0") {
                           var_temporal_res = "irregular",
                           var_discipline,
                           var_keywords,
+                          visualize,
                           var_comment)
 
     # custom metadata
     custom_metadata <- dplyr::tibble(
-                          var_short_name = colnames(data[,id2]),
+                          var_short_name = colnames(data)[id2],
                           var_long_name = "",
                           var_sensor = "",
                           var_unit = "",
@@ -113,6 +116,7 @@ xls_convert<- function(data, cruise, project, version = "v1.0") {
                           var_temporal_res = "irregular",
                           var_discipline = "",
                           var_keywords = core,
+                          visualize = rep(0, length(id2)),
                           var_comment = "")
 
     allvars_metadata <- rbind(vars_metadata, custom_metadata)
