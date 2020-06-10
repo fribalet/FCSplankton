@@ -89,8 +89,6 @@ xls_convert<- function(data, cruise, project, version = "v1.0") {
     id2 <- which(is.na(match(1:ncol(data), id1))) # which column are not standard
     id <- c(id1,id2)
 
-    core <- core(cruise)
-
     # vars_metadata
     vars_metadata <- dplyr::tibble(
                           var_short_name = var_data,
