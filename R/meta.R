@@ -102,8 +102,8 @@ xls_convert<- function(data, cruise, project, version = "v1.0") {
                           var_spatial_res = "irregular",
                           var_temporal_res = "irregular",
                           var_discipline,
-                          var_keywords,
                           visualize,
+                          var_keywords,
                           var_comment)
 
     # custom metadata
@@ -115,8 +115,8 @@ xls_convert<- function(data, cruise, project, version = "v1.0") {
                           var_spatial_res = "irregular",
                           var_temporal_res = "irregular",
                           var_discipline = "",
-                          var_keywords = core,
                           visualize = rep(0, length(id2)),
+                          var_keywords = core,
                           var_comment = "")
 
     allvars_metadata <- rbind(vars_metadata, custom_metadata)
@@ -129,7 +129,7 @@ xls_convert<- function(data, cruise, project, version = "v1.0") {
                           dataset_release_date = as.Date(Sys.time()),
                           dataset_make = "observation",
                           dataset_source = "University of Washington / Armbrust lab",
-                          official_cruise_name = cruise,
+                          "official_cruise_name(s)" = cruise,
                           dataset_acknowledgement = "",
                           contact_email = "kcain97@uw.edu, ribalet@uw.edu",
                           dataset_description = "to be added by data owner",
