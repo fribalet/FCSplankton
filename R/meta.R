@@ -111,7 +111,7 @@ cmap_convert<- function(data, cruise, project, unstained=TRUE, version = "v1.0")
         paste("unknown abundance, cell concentration, cell count, cell abundance,",core),
         paste("bacteria abundance, cell concentration, cell count, cell abundance,", core),
         paste("flag,", core),
-        paste("DNA stain, SYBR stain", core))
+        paste("DNA stain, SYBR stain,", core))
 
   if(unstained){
     var_keywords <- var_keywords[!str_detect(var_keywords,pattern="bacteria")]
@@ -169,12 +169,13 @@ cmap_convert<- function(data, cruise, project, unstained=TRUE, version = "v1.0")
                         dataset_release_date = as.Date(Sys.time()),
                         dataset_make = "observation",
                         dataset_source = "University of Washington / Armbrust lab",
-                        "official_cruise_name(s)" = cruise,
+                        dataset_distributor = "",
                         dataset_acknowledgement = "",
-                        contact_email = "kcain97@uw.edu, ribalet@uw.edu",
+                        dataset_history = "",
                         dataset_description = "to be added by data owner",
                         dataset_references = "",
-                        climatology = NULL)
+                        climatology = NULL,
+                        cruise_names = cruise)
 
   # reorder order of column so they match metadata
   data <- data[,id]
