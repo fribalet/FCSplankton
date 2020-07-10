@@ -133,9 +133,6 @@ cmap_convert<- function(data, cruise, project, unstained=TRUE, version = "v1.0")
   id2 <- which(is.na(match(1:ncol(data), c(id0, id1)))) # which column are not standard
   id <- c(id0, id1, id2)
 
-  # reorder order of column so they match metadata
-  data <- data[,id]
-
   # vars_metadata
   vars_metadata <- dplyr::tibble(
                           var_short_name = var_data,
@@ -178,6 +175,9 @@ cmap_convert<- function(data, cruise, project, unstained=TRUE, version = "v1.0")
                         dataset_description = "to be added by data owner",
                         dataset_references = "",
                         climatology = NULL)
+
+  # reorder order of column so they match metadata
+  data <- data[,id]
 
   # Save data
   openxlsx::write.xlsx(x=list(data, dataset_metadata, allvars_metadata),
