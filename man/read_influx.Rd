@@ -2,7 +2,7 @@
 % Please edit documentation in R/core-functions.R
 \name{read_influx}
 \alias{read_influx}
-\title{read an fcs file}
+\title{read a fcs file}
 \usage{
 fcs <- read.influx(fcs_file)
 }
@@ -17,5 +17,5 @@ fcs <- read.influx(fcs_file)
 a tibble dataframe
 }
 \description{
-read an fcs file
+read a fcs file
 }

@@ -14,5 +14,5 @@ Suggests:
     devtools,
     openxlsx
 License: GPL-2
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Encoding: UTF-8
