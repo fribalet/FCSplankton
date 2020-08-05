@@ -4,7 +4,7 @@
 \alias{cmap_convert}
 \title{Format Influx data into CAMP compatible format.}
 \usage{
-cmap_convert(data, cruise, project, unstained = TRUE, version = "v1.0")
+cmap_convert(data, cruise, project, version = "v1.0")
 }
 \arguments{
 \item{data}{data from Influx.}
@@ -12,8 +12,6 @@ cmap_convert(data, cruise, project, unstained = TRUE, version = "v1.0")
 \item{cruise}{cruise name, if any (otherwise NA).}
 
 \item{project}{cruise name, if any (otherwise NA).}
-
-\item{unstained}{Whether samples were unstained (no fluorochrome added) or stained (e.g. SYBRGreen). Default is TRUE}
 
 \item{version}{Version of the dataset.}
 }
