@@ -8,7 +8,7 @@ library(FCSplankton)
 setwd("PATH/TO/PROJECT")
 
 # Set analysis for unstained (TRUE) or stained samples (FALSE)
-unstained <- FALSE
+unstained <- TRUE
 
 # load list of FCS files
 if(unstained){folder <- "unstained"
@@ -31,12 +31,12 @@ names_pmt <- names(fcs)[id] # original names of FSC, 692, 580 and 530 respective
 ######################################
 gating <- TRUE
 summary_table <- NULL
-# summary_table <- read_csv(paste0(folder, "summary.csv")) # if you want to append results to an existing summary_table
+# summary_table <- read_csv(paste0(folder, "/summary.csv")) # if you want to append results to an existing summary_table
 
 # Path where to save Gating output
 system(paste0("mkdir ",folder, "/gating"))
 
-for (this_file in file_list){
+for (this_file in file_list[]){
 
     # Read data
     # this_file <- file_list[1]
@@ -48,7 +48,7 @@ for (this_file in file_list){
     names(fcs)[id] <- c("scatter", "red", "orange", "green")
 
     # Load gating if exist
-    if(!gating){ 
+    if(!gating){
       previous <- sub("raw","gating",paste0(this_file, ".RData"))
       if(file.exists(previous)) load(previous)
       }
@@ -56,16 +56,16 @@ for (this_file in file_list){
     # Gates Beads
     if(gating & folder == "unstained") gates.log <- set_gating_params(fcs, "beads", "scatter", "orange")
     if(gating & folder == "stained") gates.log <- set_gating_params(fcs, "beads", "scatter", "red")
-    
+
     # Assign "beads" label to particles
     fcs <- classify_fcs(fcs, gates.log[][1])
 
     # Normalization
     beads <- fcs[which(fcs$pop == "beads"),]
-    fcs$norm.scatter <- fcs$scatter / median(beads$scatter)
-    fcs$norm.orange <- fcs$orange / median(beads$orange)
-    fcs$norm.red <- fcs$red / median(beads$red)
-    fcs$norm.green <- fcs$green / median(beads$green)
+    fcs$norm.scatter <- fcs$scatter / mean(beads$scatter)
+    fcs$norm.orange <- fcs$orange / mean(beads$orange)
+    fcs$norm.red <- fcs$red / mean(beads$red)
+    fcs$norm.green <- fcs$green / mean(beads$green)
 
     # Gating population - WARNINGS: don't change population names!
     if(gating & folder == "unstained"){
@@ -76,9 +76,9 @@ for (this_file in file_list){
         #gates.log <- set_gating_params(fcs, "large-picoeuk", "norm_scatter", "norm_red", gates.log)
     }
     if(gating & folder == "stained"){
-       gates.log <- set_gating_params(fcs, "bacteria", "norm.scatter", "norm.orange", gates.log)
+       gates.log <- set_gating_params(fcs, "bacteria", "norm.scatter", "norm.green", gates.log)
     }
-    
+
     # Apply gates and label particles according to 'gates.log'
     fcs <- classify_fcs(fcs, gates.log)
 
@@ -89,10 +89,11 @@ for (this_file in file_list){
 
     # Save plot
     if(gating & folder == "stained"){
-        png(sub("raw","gating",paste0(this_file, ".png")),width=12, height=6, unit="in", res=200)
-        par(mfrow=c(1,2), pty="s", cex=1.2, oma=c(0,0,1,0), mar=c(5,5,1,1))
+        png(sub("raw","gating",paste0(this_file, ".png")),width=12, height=12, unit="in", res=200)
+        par(mfrow=c(2,2), pty="s", cex=1.2, oma=c(0,0,1,0), mar=c(5,5,1,1))
         plot_vct_cytogram(fcs, "norm.scatter","norm.red", ylab="red\n (normalized to beads)", xlab="scatter\n (normalized to beads)")
         plot_vct_cytogram(fcs, "norm.scatter","norm.orange", ylab="orange\n (normalized to beads)", xlab="scatter\n (normalized to beads)")
+        plot_vct_cytogram(fcs, "norm.scatter","norm.green", ylab="green\n (normalized to beads)", xlab="scatter\n (normalized to beads)")
         dev.off()
     }
     if(gating & folder == "unstained"){
@@ -102,7 +103,7 @@ for (this_file in file_list){
       plot_vct_cytogram(fcs, "norm.scatter","norm.orange", ylab="orange\n (normalized to beads)", xlab="scatter\n (normalized to beads)")
       dev.off()
     }
-    
+
     # Aggregate statistics
     stat_table <- NULL
     for(population in unique(fcs$pop)){
@@ -115,10 +116,10 @@ for (this_file in file_list){
             scatter <- 0
             red <- 0
         }else{
-            scatter <- round(median(p$norm.scatter),6)
-            red <- round(median(p$norm.red),6)
-            orange <- round(median(p$norm.orange),6)
-            green <- round(median(p$norm.green),6)
+            scatter <- round(mean(p$norm.scatter),6)
+            red <- round(mean(p$norm.red),6)
+            orange <- round(mean(p$norm.orange),6)
+            green <- round(mean(p$norm.green),6)
         }
         var <- cbind(population,count,scatter,red,orange)
         stat_table <- rbind(stat_table, var)
