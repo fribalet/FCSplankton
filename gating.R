@@ -119,9 +119,10 @@ for (this_file in file_list[]){
             scatter <- round(mean(p$norm.scatter),6)
             red <- round(mean(p$norm.red),6)
             orange <- round(mean(p$norm.orange),6)
-            green <- round(mean(p$norm.green),6)
+            if(folder == "stained"){green <- round(mean(p$norm.green),6)}
+            else{green <- NA}
         }
-        var <- cbind(population,count,scatter,red,orange)
+        var <- cbind(population,count,scatter,red,orange,green)
         stat_table <- rbind(stat_table, var)
     }
     table <- data.frame(cbind(stat_table, file=basename(this_file)))
