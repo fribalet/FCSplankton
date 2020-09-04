@@ -5,7 +5,7 @@ library(FCSplankton)
 
 
 # set the path to the Project folder
-setwd("PATH/TO/PROJECT")
+setwd("PATH/TO/PROJECT/")
 
 # Set analysis for unstained (TRUE) or stained samples (FALSE)
 unstained <- TRUE
