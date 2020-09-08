@@ -18,7 +18,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   ## Assign specific refractive indexes for each population for Mie theory conversion
   # Make dataframe with select populations that have a high index of refraction (low estimates)
   lwr <- data %>%
-        dplyr::filter(population == "picoeuk" | population == "prochloro" | population == "synecho" | population == "bacteria") %>%
+        dplyr::filter(population == "picoeuk" | population == "large-picoeuk" | population == "small-picoeuk" | population == "prochloro" | population == "synecho" | population == "bacteria") %>%
         dplyr::select(-diam_mid, -diam_upr, -Qc_mid, -Qc_upr) %>%
         dplyr::rename(cell_diameter = diam_lwr, carbon_content = Qc_lwr)
 
