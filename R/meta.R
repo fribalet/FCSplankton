@@ -31,13 +31,15 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   # merge dataframes
   data <- merge(lwr, mid, all = TRUE)
 
+  data$biomass <- data$carbon_content * data$abundance
+
   # Set core keywords
   core <- paste("discrete flow cytometry, BD Influx cell sorter, insitu, in-situ, biology, phytoplankton, picophytoplankton, Armbrust, UW, University of Washington", cruise, cruise_nickname, sep = ", ")
 
   # Pivot data from long format to wide; split population data for each variable (value) column
   data.pivot <- data %>%
           pivot_wider(names_from = population,
-                      values_from = c(count, scatter, red, orange, abundance, cell_diameter, carbon_content))
+                      values_from = c(count, scatter, red, orange, abundance, cell_diameter, carbon_content, biomass))
 
   ## Format population data
   # master list of possible population names; add to as needed
@@ -90,6 +92,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   #long_carbon_lwr <- c()
   #long_carbon_mid <- c()
   #long_carbon_upr <- c()
+  long_biomass <- c()
   comment_count <- c()
   comment_scatter <- c()
   comment_red <- c()
@@ -103,6 +106,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   #comment_carbon_lwr <- c()
   #comment_carbon_mid <- c()
   #comment_carbon_upr <- c()
+  comment_biomass <- c()
   keyword_count <- c()
   keyword_scatter <- c()
   keyword_red <- c()
@@ -116,6 +120,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   #keyword_carbon_lwr <- c()
   #keyword_carbon_mid <- c()
   #keyword_carbon_upr <- c()
+  keyword_biomass <- c()
 
   # run through loop to add all the population dependent variable metadata
   for(i in 1:length(pop)){
@@ -132,14 +137,15 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
     long_red[[i]] <- paste0("red fluorescence of ", pop[i], "-like particles, normalized to 1 micron beads (proxy of chlorophyll content)")
     long_orange[[i]] <- paste0("orange fluorescence of ", pop[i], "-like particles normalized to 1 micron beads (proxy of phycoerythrin content)")
     long_abundance[[i]] <- paste0("cell abundance of ", pop[i], "-like particles")
-    long_cell_diameter[[i]] <- paste0("average equivalent spherical diameter of ", pop[i], "-like particles using ", RI)
+    long_cell_diameter[[i]] <- paste0("equivalent spherical diameter of ", pop[i], "-like particles using ", RI)
     #long_diameter_lwr[[i]] <- paste(pop[i], "equivalent spherical diameter using high refractive index")
     #long_diameter_mid[[i]] <- paste(pop[i], "equivalent spherical diameter using mid refractive index")
     #long_diameter_upr[[i]] <- paste(pop[i], "equivalent spherical diameter using low refractive index")
-    long_carbon_content[[i]] <- paste0("average cellular carbon content of ", pop[i], "-like particles using ", RI)
+    long_carbon_content[[i]] <- paste0("cellular carbon content of ", pop[i], "-like particles using ", RI)
     #long_carbon_lwr[[i]] <- paste(pop[i], "cellular carbon content using high refractive index")
     #long_carbon_mid[[i]] <- paste(pop[i], "cellular carbon content using mid refractive index")
     #long_carbon_upr[[i]] <- paste(pop[i], "cellular carbon content using low refractive index")
+    long_biomass[[i]] <- paste0("Carbon biomass of ", pop[i], "population")
     comment_count[[i]] <- paste(pop[i], "count needs to be > 30 to be trusted")
     comment_scatter[[i]] <- paste(pop[i], "light scatter collected using a 457-50 bandpass filter")
     comment_red[[i]] <- paste(pop[i], "red fluorescence collected using a 692-40 bandpass filter")
@@ -153,6 +159,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
     #comment_carbon_lwr[[i]] <- paste(pop[i], "carbon content based on the equation fgC cell-1 = 0.261 x Volume^0.860, where Volume is calculated from cell diameter (Mie-based, using refractive index of 1.41 for phytoplankton) assuming spherical particle; see https://github.com/seaflow-uw/fsc-poc-calibration for more details")
     #comment_carbon_mid[[i]] <- paste(pop[i], "carbon content based on the equation fgC cell-1 = 0.261 x Volume^0.860, where Volume is calculated from cell diameter (Mie-based, using refractive index of 1.38 for phytoplankton) assuming spherical particle; see https://github.com/seaflow-uw/fsc-poc-calibration for more details")
     #comment_carbon_upr[[i]] <-paste(pop[i], "carbon content based on the equation fgC cell-1 = 0.261 x Volume^0.860, where Volume is calculated from cell diameter (Mie-based, using refractive index of 1.36 for phytoplankton) assuming spherical particle; see https://github.com/seaflow-uw/fsc-poc-calibration for more details")
+    comment_biomass[[i]] <- paste(pop[i], "carbon biomass = cell abundance x carbon content")
     keyword_count[[i]] <- paste(pop[i], "particle count,", core)
     keyword_scatter[[i]] <- paste(pop[i], "forward angle light scatter, FSC, FALS,", core)
     keyword_red[[i]] <- paste(pop[i], "red fluorescence, chlorophyll,", core)
@@ -166,6 +173,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
     #keyword_carbon_lwr[[i]] <- paste(pop[i], "quotas, carbon, biomass, POC,", core)
     #keyword_carbon_mid[[i]] <- paste(pop[i], "quotas, carbon, biomass, POC,", core)
     #keyword_carbon_upr[[i]] <- paste(pop[i], "quotas, carbon, biomass, POC,", core)
+    keyword_biomass[[i]] <- paste(pop[i], "carbon biomass, POC,", core)
   }
 
   var_long_name <- c("flow cytometry standard file (.fcs)",
@@ -183,6 +191,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
                      #long_carbon_lwr,
                      #long_carbon_mid,
                      #long_carbon_upr,
+                     long_biomass,
                      "sample status flag",
                      "sample stain flag")
 
@@ -201,6 +210,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
                    #comment_carbon_lwr,
                    #comment_carbon_mid,
                    #comment_carbon_upr,
+                   comment_biomass,
                    "outliers (0 = quality data; 1 = issue related to instrument performance; 2 = issue related to population classification)",
                    "DNA stain (0 = unstained sample; 1 = stained sample)")
 
@@ -210,6 +220,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
                 rep("cells/μL",length(pop)),
                 rep("micrometer", length(pop)),
                 rep("picogram carbon per cell", length(pop)),
+                rep("microgram carbon per liter", length(pop)),
                 "",
                 "")
 
@@ -219,11 +230,11 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
                      rep("Biology",length(pop)*4),
                      "",
                      rep("Biology",length(pop)),
-                     rep("Biology, Biogeochemistry", length(pop)*2),
+                     rep("Biology, Biogeochemistry", length(pop)*3),
                      "",
                      "")
 
-  visualize <- c(0, rep(1,length(pop)*4), 0, rep(1,length(pop)*3), 0, 0)
+  visualize <- c(0, rep(1,length(pop)*4), 0, rep(1,length(pop)*4), 0, 0)
 
   var_keywords <- c(paste("file,", core),
         keyword_count,
@@ -240,6 +251,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
         #keyword_carbon_lwr,
         #keyword_carbon_mid,
         #keyword_carbon_upr,
+        keyword_biomass,
         paste("flag,", core),
         paste("DNA stain, SYBR stain,", core))
 
