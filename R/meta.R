@@ -75,6 +75,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
                 #str_sort(str_subset(var_cols, "Qc_lwr_")),
                 #str_sort(str_subset(var_cols, "Qc_mid_")),
                 #str_sort(str_subset(var_cols, "Qc_upr_")),
+                str_sort(str_subset(var_cols, "biomass_")),
                 "flag",
                 "stain")
 
