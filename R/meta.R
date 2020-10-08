@@ -19,18 +19,17 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   # Make dataframe with select populations that have a high index of refraction (low estimates)
   lwr <- data %>%
         dplyr::filter(population == "picoeuk" | population == "large-picoeuk" | population == "small-picoeuk" | population == "prochloro" | population == "synecho" | population == "bacteria") %>%
-        dplyr::select(-diam_mid, -diam_upr, -Qc_mid, -Qc_upr) %>%
+        dplyr::select(-diam_mid, -diam_upr, -Qc_mid, -Qc_upr, -green) %>%
         dplyr::rename(cell_diameter = diam_lwr, carbon_content = Qc_lwr)
 
   # Make dataframe with select populations that have a mid index of refraction (middle estimates)
   mid <- data %>%
         dplyr::filter(population == "unknown" | population == "beads" | population == "croco") %>%
-        dplyr::select(-diam_lwr, -diam_upr, -Qc_lwr, -Qc_upr) %>%
+        dplyr::select(-diam_lwr, -diam_upr, -Qc_lwr, -Qc_upr, -green) %>%
         dplyr::rename(cell_diameter = diam_mid, carbon_content = Qc_mid)
 
   # merge dataframes
   data <- merge(lwr, mid, all = TRUE)
-
   data$biomass <- data$carbon_content * data$abundance
 
   # Set core keywords
