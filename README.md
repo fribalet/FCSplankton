@@ -1,21 +1,4 @@
 # FCSplankton
-A R package for analyzing phytoplankton population from discrete flow cytometry data. The script allows you to do gate population of interest, save gating parameters, and perform aggregate statistics.
+A R package for analyzing phytoplankton population from discrete flow cytometry data. The script allows you to do gate population of interest, save gating parameters, and perform aggregate statistics.The FCSplankton repo includes also a data curation pipeline formatted to produce an excel spreadsheet that meets the standards for data submission into Simons Collaborative Marine Atlas Project (CMAP), an open source data portal of oceanographic datasets. 
 
-There are two ways to install the package:
-
-- in R
-```
-library(devtools)
-install_github("fribalet/FCSplankton")
-```
-
-- in terminal
-```
-git clone https://github.com/fribalet/FCSplankton.git
-R CMD install FCSplankton
-```
-
-
-To start your analysis, open the R script ``gating.R``
-
-To plot the summary results, open the Jupityr notebook ``results.ipynb``
+Visit our ![Wikipage](https://github.com/fribalet/FCSplankton/wiki) to get started.
