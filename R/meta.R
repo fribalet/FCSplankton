@@ -152,7 +152,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
     #long_carbon_lwr[[i]] <- paste(pop[i], "cellular carbon content using high refractive index")
     #long_carbon_mid[[i]] <- paste(pop[i], "cellular carbon content using mid refractive index")
     #long_carbon_upr[[i]] <- paste(pop[i], "cellular carbon content using low refractive index")
-    long_biomass[[i]] <- paste0("carbon biomass of ", pop[i], "population")
+    long_biomass[[i]] <- paste0("carbon biomass of ", pop[i], " population")
     comment_count[[i]] <- paste(pop[i], "count needs to be > 30 to be trusted")
     comment_scatter[[i]] <- paste(pop[i], "light scatter collected using a 457-50 bandpass filter")
     comment_red[[i]] <- paste(pop[i], "red fluorescence collected using a 692-40 bandpass filter")
@@ -343,10 +343,12 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
                         dataset_release_date = as.Date(Sys.time()),
                         dataset_make = "observation",
                         dataset_source = "Armbrust Lab, University of Washington",
+                        dataset_distributor = "",
                         dataset_acknowledgement = "",
+                        dataset_history = "",
                         dataset_description = "to be added by data owner",
                         dataset_references = "",
-                        climatology = NULL,
+                        climatology = "",
                         cruise_names = cruise)
 
   # reorder order of column so they match metadata
