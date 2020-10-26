@@ -93,9 +93,12 @@ set_gating_params <- function(fcs, popname, para.x, para.y, poly.log=NULL) {
     s <- 1
   # 2. if no gating parameters found for stained sample, retrieve gating from unstained sample, if any
   }else{
-    previous <- dir(path="unstained/gating", full.names = TRUE, pattern=regmatches(previous, regexpr("[0-9].*RData", previous))) # look for file with similar file number in unstained folder
-    if(length(previous) !=0){
-      load(previous)
+    previous2 <- dir(path="unstained/gating", full.names = TRUE, pattern=regmatches(previous, regexpr("[0-9].*RData", previous))) # look for file with same file number in unstained folder
+    # if multiple files are found (case where the same digit is found multiple times)
+    n.digit <- nchar(gsub("[^0-9]+", "", previous)) # number of digit in the file of interest
+    i <- which(nchar(gsub("[^0-9]+", "", previous2)) == n.digit) # find the file that contains the correct number of digit
+    if(length(previous2) !=0){
+      load(previous2[i])
       s <- 2
     }
   }
