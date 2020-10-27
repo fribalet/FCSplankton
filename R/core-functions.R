@@ -97,7 +97,7 @@ set_gating_params <- function(fcs, popname, para.x, para.y, poly.log=NULL) {
     # if multiple files are found (case where the same digit is found multiple times)
     n.digit <- nchar(gsub("[^0-9]+", "", previous)) # number of digit in the file of interest
     i <- which(nchar(gsub("[^0-9]+", "", previous2)) == n.digit) # find the file that contains the correct number of digit
-    if(length(previous2) !=0){
+    if(length(previous2[i]) == 1){
       load(previous2[i])
       s <- 2
     }
