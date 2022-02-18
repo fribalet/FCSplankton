@@ -33,7 +33,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   data$biomass <- data$carbon_content * data$abundance
 
   # Set core keywords
-  core <- paste("discrete flow cytometry, BD Influx cell sorter, insitu, in-situ, biology, phytoplankton, picophytoplankton, Armbrust, UW, University of Washington", cruise, cruise_nickname, sep = ", ")
+  core <- paste("BD Influx cell sorter, biogeochemistry, biology, cruise, discrete flow cytometry, FACS, FCM, in situ, insitu, in-situ, observation, phytoplankton, picophytoplankton, Armbrust, UW, University of Washington", cruise, cruise_nickname, sep = ", ")
 
   # Pivot data from long format to wide; split population data for each variable (value) column
   data.pivot <- data %>%
@@ -170,15 +170,15 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
     comment_biomass[[i]] <- paste(pop[i], "carbon biomass = cell abundance x carbon content")
     keyword_count[[i]] <- paste(pop[i], "particle count,", core)
     keyword_scatter[[i]] <- paste(pop[i], "forward angle light scatter, FSC, FALS,", core)
-    keyword_red[[i]] <- paste(pop[i], "red fluorescence, chlorophyll,", core)
-    keyword_orange[[i]] <- paste(pop[i], "orange fluorescence, phycoerythrin,", core)
+    keyword_red[[i]] <- paste(pop[i], "red fluorescence, chlorophyll, chl", core)
+    keyword_orange[[i]] <- paste(pop[i], "orange fluorescence, phycoerythrin, pe", core)
     #keyword_green[[i]] <- paste(pop[i], "green fluorescence, SYBR Green I, nucleic acid stain,", core)
     keyword_abundance[[i]] <- paste(pop[i],"abundance, cell concentration, cell count, cell abundance,", core)
-    keyword_cell_diameter[[i]] <- paste(pop[i],"size, diameter, ESD,", core)
+    keyword_cell_diameter[[i]] <- paste(pop[i],"cell size, diameter, ESD,", core)
     #keyword_diameter_lwr[[i]] <- paste(pop[i],"size, diameter, ESD,", core)
     #keyword_diameter_mid[[i]] <- paste(pop[i],"size, diameter, ESD,", core)
     #keyword_diameter_upr[[i]] <- paste(pop[i],"size, diameter, ESD,", core)
-    keyword_carbon_content[[i]] <- paste(pop[i], "quotas, carbon, biomass, POC,", core)
+    keyword_carbon_content[[i]] <- paste(pop[i], "carbon content, carbon quota, POC,", core)
     #keyword_carbon_lwr[[i]] <- paste(pop[i], "quotas, carbon, biomass, POC,", core)
     #keyword_carbon_mid[[i]] <- paste(pop[i], "quotas, carbon, biomass, POC,", core)
     #keyword_carbon_upr[[i]] <- paste(pop[i], "quotas, carbon, biomass, POC,", core)
@@ -235,15 +235,15 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
                 "",
                 "")
 
-  var_sensor <- rep("Flow cytometry",length(var_data))
+  var_sensor <- rep("Flow Cytometer",length(var_data))
 
-  var_discipline <- c("",
+  var_discipline <- c("Uncategorized",
                      rep("Biology",length(pop)*4),
-                     "",
+                     "Uncategorized",
                      rep("Biology",length(pop)),
-                     rep("Biology, Biogeochemistry", length(pop)*3),
-                     "",
-                     "")
+                     rep("Biology+Biogeochemistry", length(pop)*3),
+                     "Uncategorized",
+                     "Uncategorized")
 
   visualize <- c(0, rep(1,length(pop)*4), 0, rep(1,length(pop)*4), 0, 0)
 
@@ -284,15 +284,15 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
 #                  "",
 #                  "")
 #
-#    var_sensor <- rep("Flow cytometry",length(var_data))
+#    var_sensor <- rep("Flow cytometer",length(var_data))
 #
-#    var_discipline <- c("",
+#    var_discipline <- c("Uncategorized",
 #                       rep("Biology",length(pop)*4),
-#                       "",
+#                       "Uncategorized",
 #                       rep("Biology",length(pop)),
-#                       rep("Biology, Biogeochemistry", length(pop)*3),
-#                       "",
-#                       "")
+#                       rep("Biology+Biogeochemistry", length(pop)*3),
+#                       "Uncategorized",
+#                       "Uncategorized")
 #
 #    visualize <- c(0, rep(1,length(pop)*4), 0, rep(1,length(pop)*4), 0, 0)
 #
@@ -301,7 +301,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
 
 
   # add custom column to metadata
-  coordinates <- c("time","lat","lon","depth")
+  coordinates <- c("file","time","lat","lon","depth")
   id0 <- match(coordinates,colnames(data.pivot)) # which column are standard
   id1 <- match(var_data,colnames(data.pivot)) # which column are standard
   id2 <- which(is.na(match(1:ncol(data.pivot), c(id0, id1)))) # which column are not standard
@@ -324,11 +324,11 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   custom_metadata <- dplyr::tibble(
                           var_short_name = colnames(data.pivot)[id2],
                           var_long_name = "",
-                          var_sensor = "",
+                          var_sensor = "Uncategorized",
                           var_unit = "",
                           var_spatial_res = "irregular",
                           var_temporal_res = "irregular",
-                          var_discipline = "",
+                          var_discipline = "Uncategorized",
                           visualize = rep(0, length(id2)),
                           var_keywords = core,
                           var_comment = "")
