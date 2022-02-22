@@ -357,6 +357,6 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   ## Save data
   openxlsx::write.xlsx(x=list(data.pivot, dataset_metadata, allvars_metadata),
                       file = paste0("Influx_", project, "_",as.Date(Sys.time()),"_" ,version,".xlsx"),
-                      sheetName=c('data','dataset_meta_data','vars_meta_data'))
+                      sheetName=c('data','dataset_meta_data','vars_meta_data'),overwrite = TRUE)
 
 }
