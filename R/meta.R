@@ -301,7 +301,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
 
 
   # add custom column to metadata
-  coordinates <- c("file","time","lat","lon","depth")
+  coordinates <- c("time","lat","lon","depth")
   id0 <- match(coordinates,colnames(data.pivot)) # which column are standard
   id1 <- match(var_data,colnames(data.pivot)) # which column are standard
   id2 <- which(is.na(match(1:ncol(data.pivot), c(id0, id1)))) # which column are not standard
