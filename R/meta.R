@@ -33,7 +33,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   data$biomass <- data$carbon_content * data$abundance
 
   # Set core keywords
-  core <- paste("BD Influx cell sorter, biogeochemistry, biology, cruise, discrete flow cytometry, FACS, FCM, in situ, insitu, in-situ, observation, phytoplankton, picophytoplankton, Armbrust, UW, University of Washington", cruise, cruise_nickname, sep = ", ")
+  core <- paste("BD Influx Cell Sorter, biogeochemistry, biology, cruise, discrete flow cytometry, FACS, FCM, in situ, insitu, in-situ, observation, phytoplankton, picophytoplankton, Armbrust, UW, University of Washington", cruise, cruise_nickname, sep = ", ")
 
   # Pivot data from long format to wide; split population data for each variable (value) column
   data.pivot <- data %>%
@@ -43,10 +43,11 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
 
   ## Format population data
   # master list of possible population names; add to as needed
-  long_pop <- c("prochlorococcus", "synechococcus", "picoeukaryote", "large-picoeukaryote", "small-picoeukaryote", "crocosphaera", "bacteria", "unknown", "beads")
+  long_pop <- c("Prochlorococcus", "Synechococcus", "Picoeukaryote", "Large-Picoeukaryote", "Small-Picoeukaryote", "Crocosphaera", "Bacteria", "Unknown", "Beads")
 
   # get unique population names from dataset
   data_pop <- str_sort(unique(data$population))
+  str_sub(data_pop, 1, 1) <- str_sub(data_pop, 1, 1) %>% str_to_upper()
 
   # anchor population name to subset correct population names based on matching the beginning of population names
   match_pop <- str_replace_all(data_pop, "^", "^")
@@ -204,6 +205,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
                      long_biomass,
                      "sample status flag",
                      "sample stain flag")
+  var_long_name <- stringr::str_to_title(var_long_name)
 
   var_comment <- c("",
                    comment_count,
@@ -338,7 +340,7 @@ cmap_convert<- function(data, cruise, cruise_nickname, project, version = "v1.0"
   # dataset_metadata
   dataset_metadata <- dplyr::tibble(
                         dataset_short_name = paste0("Influx_",project),
-                        dataset_long_name = paste0("Discrete flow cytometry of ",str_replace_all(project, "_", " "), " using a BD Influx Cell Sorter"),
+                        dataset_long_name = paste0("Discrete Flow Cytometry of ",str_replace_all(project, "_", " "), " Using a BD Influx Cell Sorter"),
                         dataset_version = version,
                         dataset_release_date = as.Date(Sys.time()),
                         dataset_make = "observation",
