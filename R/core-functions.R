@@ -5,9 +5,9 @@
 #' @return a tibble dataframe
 #' @usage fcs <- read.influx(fcs_file)
 #' @export read_influx
-read_influx <- function(fcs_file, transformation=TRUE){
+read_influx <- function(fcs_file, transformation=TRUE, ...){
 
-  df.fcs <- dplyr::as_tibble(flowCore::exprs(flowCore::read.FCS(fcs_file, transformation=transformation, emptyValue=F)))
+  df.fcs <- dplyr::as_tibble(flowCore::exprs(flowCore::read.FCS(fcs_file, transformation=transformation, emptyValue=F, ...)))
   fcs <- df.fcs %>%
           add_column(file = paste(fcs_file), pop = "unknown")
   return(fcs)
