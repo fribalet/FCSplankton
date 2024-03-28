@@ -9,7 +9,7 @@ unstained <- FALSE
 
 ## Load mie lookup table
 mie <- as.data.frame(read.csv(system.file("scatter", paste0("calibrated-mieINFLUX.csv"),package="FCSplankton")))
-mie[1:3,] ## NOTE: Leo and Penny are included in the same Mie lookup table. Choose the column index for the correct instrument that samples were run on.
+mie[1:3,] ## NOTE: Leo and Penny are included in the same Mie lookup table.
 
 ## Load metadata
 meta <- read_csv("metadata.txt")
@@ -119,11 +119,6 @@ for(folder_name in folder){
   # calculate abundance in each size class bin
   DIST[,clmn] <-  DIST[,clmn] / DIST[["volume"]]
 
-  # calculate total abundance
-  DIST$total_abundance <- rowSums(DIST[,clmn])
-
-  # save data
-  #write_csv(DIST, "uncorrected_particle_distribution.csv")
 
 }
 
@@ -170,8 +165,6 @@ clmn <- grep(")", names(PSD_all))
 b <- strsplit(sub("\\[","",sub("\\)","",colnames(PSD_all)[clmn])),",")
 Qc_geom_mean <- unlist(list(lapply(b, function(x) sqrt(mean(as.numeric(x))*max(as.numeric(x))))))
 
-colnames(PSD_all)[clmn] <- Qc_geom_mean
-
 # convert dataframe to long format
 PSD_long <- PSD_all %>%
   pivot_longer(
@@ -186,8 +179,8 @@ PSD_long$Qc <- as.numeric(PSD_long$Qc)
 PSD_long$Qc[sapply(PSD_long$Qc, is.infinite)] <- NA
 PSD <- dplyr::filter(PSD_long,abundance_per_bin != 0)
 
-# Calculate biomass (µC per µl) per bin
-PSD$biomass_per_bin <- PSD$Qc * PSD$abundance_per_bin
+# Calculate biomass (µgC/L) per bin
+PSD$biomass_per_bin <- PSD$Qc * PSD$abundance_per_bin # (pgC/cell * cell/µL)
 
 # Find closest equivilent spherical diameter matches to the carbon quota from the Mie lookup table for each particle
 mie <- as.data.frame(read.csv(system.file("scatter", paste0("calibrated-mieINFLUX.csv"),package="FCSplankton")))
