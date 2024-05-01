@@ -1,11 +1,11 @@
 Package: FCSplankton
-Title: FCSplankton: A R package for analyzing phytoplankton population from discrete flow cytometry data
-Version: 0.1.0
+Title: FCSplankton: A R package for analyzing microbial populations from discrete flow cytometry data
+Version: 1.1.0
 Author: Francois Ribalet, Kelsy Cain
 Maintainer: Francois Ribalet <ribalet@uw.edu>
-Description: A R package for analyzing phytoplankton population from discrete flow cytometry data
+Description: A R package for analyzing microbial population from discrete flow cytometry data
 Depends:
-    R (>= 3.4.0),
+    R (>= 4.3.0),
     flowCore,
     splancs,
     viridis,
