@@ -195,6 +195,7 @@ PSD_long$Qc[sapply(PSD_long$Qc, is.infinite)] <- NA
 PSD$biomass_per_bin <- PSD$Qc * PSD$abundance_per_bin # (pgC/cell * cell/µL)
 
 ## Plot distributions to check PSD bacteria correction
+if(unstained == FALSE){
 PSD_correction_check <- PSD_long
 
 PSD_correction_check <- PSD_correction_check %>%
@@ -209,27 +210,13 @@ group_colors <- c(corrected_bacteria ="cyan",
                   bacteria = "lightsalmon1",
                   prochloro=viridis::viridis(4)[1])
 
-PSD_correction_check %>%
-  group_by(station,sample)  %>%
-  dplyr::filter(pop!="synecho"&pop!="picoeuk") %>%
-  ggplot() +
-  ggridges::geom_density_ridges(aes(x = Qc, y = sample, height = abundance_per_bin, fill = pop, group = interaction(sample,pop)), stat="identity", color="darkgrey", alpha=0.35,size=.4,panel_scaling=FALSE) +
-  scale_x_continuous(trans = "log10", limits = c(.001, 1)) +
-  #scale_fill_manual(name = 'Population', values = group_colors, breaks = c("bacteria",'prochloro',"corrected_bacteria"), labels = c("Bacteria+Pro",'Pro',"Corrected Bacteria")) +
-  theme(legend.key.size = unit(.35, 'cm')) +
-  annotation_logticks(sides = "b")  +
-  theme_bw() +
-  #facet_grid(. ~ station) +
-  labs(x="Carbon Content Distribution (pgC)",
-       y= "Sample")
-
  PSD_correction_check %>%
    group_by(station,sample)  %>%
-   dplyr::filter(pop=="bacteria" | pop=="corrected_bacteria") %>%
+   dplyr::filter(pop=="bacteria" | pop=="corrected_bacteria" | pop=="prochloro") %>%
    ggplot() +
    ggridges::geom_density_ridges(aes(x = Qc, y = treatment, height = abundance_per_bin, fill =pop, group = interaction(incubation,treatment,pop)), stat="identity", color="darkgrey", alpha=0.35,size=.35,panel_scaling=FALSE) +
    scale_x_continuous(trans = "log10", limits = c(.001, 1)) +
-   scale_fill_manual(name = 'Population', values = group_colors, breaks = c("corrected_bacteria","bacteria"), labels = c("Corrected Bacteria","Bacteria+Pro")) +
+   scale_fill_manual(name = 'Population', values = group_colors, breaks = c("corrected_bacteria","bacteria","prochloro"), labels = c("Corrected Bacteria","Bacteria+Pro","Prochloro")) +
    theme(legend.key.size = unit(.35, 'cm')) +
    annotation_logticks(sides = "b")  +
    theme_bw() +
@@ -240,6 +227,7 @@ PSD_correction_check %>%
 ## Finalize PSD dataframe
 PSD <- dplyr::filter(PSD_long,pop!="bacteria")    # remove uncorrected bacteria from dataframe
 PSD$pop[PSD$pop=="corrected_bacteria"]<-"bacteria" # rename corrected_bacteria to bacteria
+}
 
 # Find closest equivilent spherical diameter matches to the carbon quota from the Mie lookup table for each particle
 mie <- as.data.frame(read.csv(system.file("scatter", paste0("calibrated-mieINFLUX.csv"),package="FCSplankton")))
